@@ -1,55 +1,43 @@
-class BankAccount
+namespace BankAccountProject
 {
-    private decimal balance;
-
-    public string FirstName { get; set; }
-
-    public string LastName { get; set; }
-
-    public string AccountNumber { get; set; }
-
-    public string AccountType { get; set; }
-
-    public decimal InterestRate { get; set; }
-
-    public decimal MinimumBalance { get; set; }
-
-    public decimal CreditLimit { get; set; }
-
-    public BankAccount(decimal initialBalance = 0)
+    // BankAccount is a normal account that cannot withdraw more than its balance.
+    public class BankAccount : Account
     {
-        balance = initialBalance;
-    }
+        // Label used when displaying this account.
+        public override string AccountType => "Normal";
+        // Optional interest rate associated with the account.
+        public decimal InterestRate { get; }
 
-    public void Deposit(decimal amount)
-    {
-        if (amount <= 0)
+        // Creates a normal account.
+        // firstName, lastName, and accountNumber identify the customer and account.
+        // initialBalance is the starting amount; interestRate is the account's interest rate.
+        public BankAccount(
+            string firstName = "Unknown",
+            string lastName = "Customer",
+            string accountNumber = "UNASSIGNED",
+            decimal initialBalance = 0,
+            decimal interestRate = 0)
+            : base(firstName, lastName, accountNumber, initialBalance)
         {
-            throw new ArgumentException("Deposit amount must be positive.");
-        }
-        balance += amount;
-    }
+            if (interestRate < 0)
+            {
+                throw new ArgumentException("Interest rate cannot be negative.");
+            }
 
-    public void Withdraw(decimal amount)
-    {
-        if (amount <= 0)
+            InterestRate = interestRate;
+        }
+
+        // Withdraws money only when the account has enough available balance.
+        // amount is the money to withdraw.
+        public override void Withdraw(decimal amount)
         {
-            throw new ArgumentException("Withdrawal amount must be positive.");
-        }
-        if (amount > balance)
-        {
-            throw new InvalidOperationException("Insufficient funds.");
-        }
-        balance -= amount;
-    }
+            ValidateAmount(amount, "Withdrawal");
+            if (amount > Balance)
+            {
+                throw new InvalidOperationException("Insufficient funds.");
+            }
 
-    public decimal GetBalance()
-    {
-        return balance;
-    }
-
-    public decimal GetInterestRate()
-    {
-        return InterestRate;
+            Balance -= amount;
+        }
     }
 }
